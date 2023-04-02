@@ -1,0 +1,10 @@
+version: '3.9'
+
+services:
+
+  mongo:
+    image: mongo:6.0.5
+    ports:
+      - 27017:27017
+    volumes:
+      - ./src/Database:/docker-entrypoint-initdb.d

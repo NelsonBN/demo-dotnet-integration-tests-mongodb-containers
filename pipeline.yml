@@ -1,0 +1,47 @@
+name: 'Demo Integration Tests'
+
+trigger:
+- main
+
+
+resources:
+  containers:
+  - container: mongodb
+    image: mongo:6.0.5
+    ports:
+      - 27017:27017
+
+
+stages:
+
+- stage: integrationTests
+  displayName: 'Integration tests'
+  jobs:
+
+  - job: tests
+    displayName: 'Tests'
+    pool:
+      vmImage: 'ubuntu-latest'
+    services:
+      mongodb: mongodb
+    steps:
+
+    - script: docker ps
+      displayName: 'Show running containers'
+
+    - task: UseDotNet@2
+      displayName: 'Install .NET SDK'
+      inputs:
+        version: '7.x'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore dependecies'
+      inputs:
+        command: 'restore'
+        projects: '**/**/*.csproj'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Running tests'
+      inputs:
+        command: test
+        projects: '**/*tests/*Tests.csproj'
